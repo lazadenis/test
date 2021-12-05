@@ -1,0 +1,93 @@
+import time
+import sys
+import pyttsx3 #pip install pyttsx3
+import speech_recognition as sr #pip install speechrecognition
+import datetime
+import webbrowser
+import os
+import pywhatkit as kt #pip install pywhatkit
+#pip install pipwin
+#pipwin install pyaudio
+
+engine = pyttsx3.init('sapi5')
+
+
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
+
+def takecommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Listening...")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+
+    try:
+        print("Recognizing...")
+        cmd = r.recognize_google(audio, language='en-in')
+        print(f"User said:",cmd)
+
+    except Exception as e:
+        print("Can't hear you...")
+        return "None"
+    return cmd
+
+if __name__ == "__main__":
+    while True:
+        alarm = datetime.datetime.now()
+        if (alarm.hour>=7):
+            music_dir = 'D:\\My Docs\\youtube\\Multitech2030\\Jarvis\\alarm.mp3'
+            os.startfile(music_dir)
+            speak("Hello Sir. Please tell me how may I help you")
+            while True:
+                cmd = takecommand().lower()
+                if 'open youtube' in cmd:
+                    url = 'https://youtube.com/'
+                    webbrowser.open(url)
+
+                elif 'open google' in cmd:
+                    url = 'https://google.com/'
+                    webbrowser.open(url)
+
+                elif 'open stack overflow' in cmd:
+                    url = 'https://stackoverflow.com/'
+                    webbrowser.open(url)
+
+                elif 'open python' in cmd:
+                    url = 'http://docs.python.org/'
+                    webbrowser.open(url)
+
+                elif 'play music' in cmd:
+                    music_dir = 'D:\\My Docs\\youtube\\Multitech2030\\Jarvis\\music1.mp3'
+                    os.startfile(music_dir)
+
+                elif 'the time' in cmd:
+                    strTime = datetime.datetime.now().strftime("%H:%M:%S")
+                    speak(f"Sir, the time is {strTime}")
+
+                elif 'search' in cmd:
+                    speak("Let's perform Google search!")
+                    content = takecommand()
+                    if content != "None":
+                        kt.search(content)
+                    else:
+                        speak("i cant hear you")
+
+                elif 'close' in cmd:
+                    kt.close_tab()
+
+                elif 'message' in cmd:
+                    speak('ready')
+                    msg = takecommand()
+                    if msg != "None":
+                        kt.sendwhatmsg_instantly('Enter phone number here', msg)
+
+                elif 'shutdown' in cmd:
+                    kt.shutdown(2)
+
+                elif 'stop' in cmd:
+                    speak("shutting down")
+                    sys.exit()
+
+
